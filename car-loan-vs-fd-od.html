@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Car Loan vs FD + OD Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+    --blue: #4f8cff;
+    --green: #5bbf9d;
+    --purple: #8a63d2;
+    --bg: #f4f6f9;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    padding: 16px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+label {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+button {
+    margin-top: 18px;
+    padding: 12px;
+    font-size: 16px;
+    width: 100%;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.results {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.card {
+    padding: 14px;
+    border-radius: 8px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+}
+
+.super-premium-card {
+    border: 2px solid var(--purple);
+    background: #f8f4ff;
+}
+
+.winner {
+    border: 2px solid var(--green);
+    background: #eef9f4;
+}
+
+.loser {
+    border: 2px solid #ffb4b4;
+    background: #fff1f1;
+}
+
+.highlight {
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.chart-box {
+    margin-top: 30px;
+    height: 380px;
+}
+
+.watermark {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+}
+
+/* Add a subtle loading indicator */
+.calculating {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.card-icon {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Branded header and clear utility navigation */
+.site-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:12px 14px;margin:-4px 0 20px;border-bottom:1px solid #dfe4ec;background:#fff;border-radius:8px}
+.site-brand{font-weight:800;color:var(--blue);text-decoration:none;font-size:16px;white-space:nowrap}
+.site-nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.site-nav a{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border:1px solid #cbd8ef;border-radius:7px;background:#f1f5ff;color:#244f9c;text-decoration:none;font-size:13px;font-weight:700;line-height:1.25}
+.site-nav a:hover,.site-nav a:focus{background:#e4edff;border-color:var(--blue);outline:2px solid #4f8cff33}
+.site-nav a.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.channel-promo{margin:20px 0 0;padding:15px;border:1px solid #c9d8ff;border-radius:9px;background:#f2f6ff;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.channel-promo strong{display:block;font-size:16px;color:#244f9c;margin-bottom:3px}
+.channel-promo p{margin:0;color:#52627d;font-size:13px}
+.channel-link{display:inline-block;padding:10px 14px;border-radius:7px;background:#168b57;color:#fff;text-decoration:none;font-weight:700;font-size:14px;white-space:nowrap}
+@media(max-width:600px){.site-header{align-items:flex-start}.site-nav{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.site-nav a{width:100%;text-align:center;padding:10px 6px}.channel-link{width:100%;text-align:center}}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<header class="site-header">
+  <a class="site-brand" href="index.html">💰 Wealth Finance Utilities</a>
+  <nav class="site-nav" aria-label="Calculator navigation">
+    <a href="index.html">All Calculators</a>
+    <a href="car-loan-vs-fd-od.html" class="active" aria-current="page">Car Loan vs FD + OD</a>
+    <a href="car-loan-extra-vs-rd.html">Extra EMI vs RD</a>
+    <a href="sip-calculator.html">SIP Calculator</a>
+    <a href="fd-tax-calculator.html">FD Tax Calculator</a>
+  </nav>
+</header>
+
+    <h1>Car Loan vs FD + OD Calculator</h1>
+
+    <div class="grid">
+        <div>
+            <label>Loan Amount (₹)</label>
+            <input type="number" id="amount" value="2500000" min="10000" step="10000">
+        </div>
+
+        <div>
+            <label>Tenure (Years)</label>
+            <select id="yearsSelect"></select>
+        </div>
+
+        <div>
+            <label>Car Loan Interest (%)</label>
+            <input type="number" id="loanRate" value="8.5" step="0.1" min="0" max="30">
+        </div>
+
+        <div>
+            <label>FD Interest (%)</label>
+            <input type="number" id="fdRate" value="6.5" step="0.1" min="0" max="20">
+        </div>
+
+        <div>
+            <label>OD Spread (%)</label>
+            <input type="number" id="spread" value="1.0" step="0.1" min="0" max="10">
+        </div>
+
+        <div>
+            <label>Tax on FD Interest (%)</label>
+            <input type="number" id="tax" value="30" min="0" max="100">
+        </div>
+    </div>
+
+    <div class="checkbox-container">
+        <input type="checkbox" id="superPremiumCard" checked>
+        <label for="superPremiumCard">I have a Super Premium Credit Card (5% cashback on car purchase)</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="number" id="cashbackRate" value="5" step="0.1" min="0" max="20" style="width: 80px;">
+        <label for="cashbackRate">Cashback/Return Rate (%)</label>
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="results">
+        <div id="loanCard" class="card">
+            <div class="card-header">
+                <span class="card-icon" style="color:var(--blue)">🚗</span>
+                <h3 style="margin: 0; color:var(--blue)">Car Loan</h3>
+            </div>
+            <p>EMI: ₹<span id="loanEmi"></span></p>
+            <p>Total Interest: ₹<span id="loanInterest"></span></p>
+            <p><strong>Total Cost:</strong> ₹<span id="loanTotalCost"></span></p>
+        </div>
+
+        <div id="odCard" class="card">
+            <div class="card-header">
+                <span class="card-icon" style="color:var(--green)">🏦</span>
+                <h3 style="margin: 0; color:var(--green)">FD + Overdraft</h3>
+            </div>
+            <p>OD Interest: ₹<span id="odInterest"></span></p>
+            <p>FD Interest (Post-Tax): ₹<span id="fdInterest"></span></p>
+            <p>Credit Card Cashback: ₹<span id="cashbackAmount"></span></p>
+            <p><strong>Net Cost:</strong> ₹<span id="odNet"></span></p>
+        </div>
+    </div>
+
+    <div id="winner" class="highlight"></div>
+
+    <div class="chart-box">
+        <canvas id="balanceChart"></canvas>
+    </div>
+
+    
+<section class="channel-promo" aria-label="WhatsApp channel promotion">
+  <div>
+    <strong>📣 Follow WealthFinanceByKunal on WhatsApp</strong>
+    <p>Get personal finance tips, credit-card offers, savings strategies and useful money calculators.</p>
+  </div>
+  <a class="channel-link" href="https://whatsapp.com/channel/0029VaDsVrdGJP8Dq8mHdS3M" target="_blank" rel="noopener noreferrer">Follow WhatsApp Channel ↗</a>
+</section>
+<div class="watermark">
+        Marketed by <strong>Kunal</strong>
+    </div>
+</div>
+
+<script>
+let chart;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const tenureSelect = document.getElementById("yearsSelect");
+    for (let i = 1; i <= 10; i++) {
+        tenureSelect.innerHTML += `<option value="${i}">${i} Year${i>1?"s":""}</option>`;
+    }
+    tenureSelect.value = "5";
+    
+    // Initialize calculation
+    calculate();
+    
+    // Add real-time event listeners
+    const inputs = document.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        if (input.type === 'number') {
+            input.addEventListener('input', debounce(calculate, 300));
+        } else if (input.type === 'checkbox') {
+            input.addEventListener('change', calculate);
+        } else {
+            input.addEventListener('change', calculate);
+        }
+    });
+    
+    // Add the Calculate button back for manual triggering if needed
+    document.querySelector('button').addEventListener('click', calculate);
+});
+
+// Debounce function to prevent excessive calculations while typing
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function calculate() {
+    // Add visual feedback during calculation
+    const container = document.querySelector('.container');
+    container.classList.add('calculating');
+    
+    // Use setTimeout to allow UI to update before heavy calculation
+    setTimeout(() => {
+        try {
+            const P = Number(document.getElementById("amount").value);
+            const yearsValue = Number(document.getElementById("yearsSelect").value);
+            const loanRateAnnual = Number(document.getElementById("loanRate").value);
+            const fdRateAnnual = Number(document.getElementById("fdRate").value);
+            const spreadAnnual = Number(document.getElementById("spread").value);
+            const taxPercent = Number(document.getElementById("tax").value);
+            const hasSuperPremiumCard = document.getElementById("superPremiumCard").checked;
+            const cashbackRate = hasSuperPremiumCard ? Number(document.getElementById("cashbackRate").value) : 0;
+
+            // Basic validation
+            if (P <= 0 || yearsValue <= 0 || yearsValue > 10) {
+                container.classList.remove('calculating');
+                return;
+            }
+
+            const months = yearsValue * 12;
+            const loanRate = loanRateAnnual / 100 / 12;
+            const odRate = (fdRateAnnual + spreadAnnual) / 100 / 12;
+
+            const emi = P * loanRate * Math.pow(1 + loanRate, months) / 
+                (Math.pow(1 + loanRate, months) - 1);
+
+            let loanBal = P;
+            let odBal = P;
+
+            // Arrays to track cumulative interest costs
+            let loanInterestCumulative = [];
+            let odNetCumulative = [];
+            let labels = [];
+
+            let totalLoanInterest = 0;
+            let totalODInterest = 0;
+            const fdInterestNetTotal = (P * (fdRateAnnual / 100) * yearsValue) * (1 - taxPercent / 100);
+            const cashbackAmount = (P * cashbackRate / 100);
+
+            for (let m = 1; m <= months; m++) {
+                const loanInterest = loanBal * loanRate;
+                totalLoanInterest += loanInterest;
+                loanBal -= (emi - loanInterest);
+
+                const odInterest = odBal * odRate;
+                totalODInterest += odInterest;
+                odBal -= emi;
+
+                // Calculate cumulative FD interest earned up to this month
+                const fdInterestEarnedSoFar = (P * (fdRateAnnual / 100) * (m / 12)) * (1 - taxPercent / 100);
+                // Calculate proportional cashback (assuming received immediately)
+                const proportionalCashback = cashbackAmount * (m / months);
+                const odNetCostSoFar = totalODInterest - fdInterestEarnedSoFar - proportionalCashback;
+
+                loanInterestCumulative.push(totalLoanInterest);
+                odNetCumulative.push(odNetCostSoFar);
+                labels.push("M" + m);
+            }
+
+            const fdInterestNet = fdInterestNetTotal;
+            const odNetCost = totalODInterest - fdInterestNet - cashbackAmount;
+            const loanTotalCost = totalLoanInterest; // Car loan doesn't get cashback benefit
+
+            document.getElementById("loanEmi").innerText = emi.toFixed(0);
+            document.getElementById("loanInterest").innerText = totalLoanInterest.toFixed(0);
+            document.getElementById("loanTotalCost").innerText = loanTotalCost.toFixed(0);
+            document.getElementById("odInterest").innerText = totalODInterest.toFixed(0);
+            document.getElementById("fdInterest").innerText = fdInterestNet.toFixed(0);
+            document.getElementById("cashbackAmount").innerText = cashbackAmount.toFixed(0);
+            document.getElementById("odNet").innerText = odNetCost.toFixed(0);
+
+            const loanCard = document.getElementById("loanCard");
+            const odCard = document.getElementById("odCard");
+            loanCard.className = "card";
+            odCard.className = "card";
+
+            if (hasSuperPremiumCard) {
+                odCard.classList.add("super-premium-card");
+            }
+
+            // Determine winner based on net costs
+            if (odNetCost < loanTotalCost) {
+                odCard.classList.add("winner");
+                loanCard.classList.add("loser");
+                document.getElementById("winner").innerText =
+                    `✅ FD + OD is BETTER (Saves ₹${(loanTotalCost - odNetCost).toFixed(0)})`;
+            } else {
+                loanCard.classList.add("winner");
+                odCard.classList.add("loser");
+                document.getElementById("winner").innerText =
+                    `✅ Car Loan is BETTER (Saves ₹${(odNetCost - loanTotalCost).toFixed(0)})`;
+            }
+
+            // Render the interest cost comparison chart
+            renderInterestChart(labels, loanInterestCumulative, odNetCumulative);
+        } catch (error) {
+            console.error("Calculation error:", error);
+        } finally {
+            container.classList.remove('calculating');
+        }
+    }, 10);
+}
+
+function renderInterestChart(labels, loanInterestData, odNetData) {
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("balanceChart"), {
+        type: "line",
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: "Car Loan - Total Interest Cost",
+                    data: loanInterestData,
+                    borderColor: "#4f8cff",
+                    backgroundColor: "rgba(79,140,255,0.15)",
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 3
+                },
+                {
+                    label: "FD + OD - Net Interest Cost",
+                    data: odNetData,
+                    borderColor: "#5bbf9d",
+                    backgroundColor: "rgba(91,191,157,0.15)",
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { position: "top" },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ₹${context.parsed.y.toLocaleString('en-IN')}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cumulative Interest Cost (₹)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) {
+                                return '₹' + (value / 1000000).toFixed(1) + 'M';
+                            } else if (value >= 100000) {
+                                return '₹' + (value / 100000).toFixed(1) + 'L';
+                            } else {
+                                return '₹' + value.toLocaleString('en-IN');
+                            }
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Months'
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>
+

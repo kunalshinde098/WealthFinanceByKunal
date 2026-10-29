@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Compare extra monthly car-loan prepayments with investing the surplus in an RD and prepaying later.">
+<title>Car Loan Extra Payment vs RD Calculator</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--blue:#4f8cff;--green:#5bbf9d;--purple:#8a63d2;--bg:#f4f6f9;--ink:#202938;--muted:#687386;--line:#dfe4ec}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);padding:16px;margin:0;color:var(--ink);line-height:1.5}
+.container{max-width:1100px;margin:auto;background:#fff;padding:clamp(16px,3vw,24px);border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+h1{text-align:center;margin:4px 0 8px;font-size:clamp(23px,4vw,32px);line-height:1.25}
+.subtitle{text-align:center;color:var(--muted);margin:0 auto 24px;max-width:760px}
+h2{font-size:19px;margin:22px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+input,select{width:100%;padding:10px;font-size:15px;border:1px solid #cbd3df;border-radius:6px;min-height:42px;background:#fff;color:var(--ink)}
+button{margin-top:18px;padding:12px;font-size:16px;width:100%;background:var(--blue);color:white;border:none;border-radius:6px;cursor:pointer;font-weight:700}
+button.secondary{background:#eef3ff;color:#285fc0}
+.results{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.card{padding:14px;border-radius:8px;background:#fafafa;border:1px solid #ddd;min-width:0}
+.card h3{margin:0 0 10px;font-size:16px}
+.card p{margin:8px 0}
+.metric{font-size:clamp(22px,3vw,28px);font-weight:800;overflow-wrap:anywhere}
+.muted{color:var(--muted);font-size:13px}
+.winner{border:2px solid var(--green);background:#eef9f4}
+.loser{border:2px solid #ffb4b4;background:#fff1f1}
+.highlight{margin-top:16px;padding:14px;font-size:17px;font-weight:bold;text-align:center;border-radius:8px;background:#eef9f4}
+.chart-box{margin-top:26px;height:340px;position:relative}
+.notice{margin-top:18px;padding:12px;background:#fff8e8;border:1px solid #f0dca9;border-radius:8px;font-size:13px;color:#5c4a1b}
+.watermark{margin-top:24px;text-align:center;font-size:12px;color:#777}
+small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+@media(max-width:600px){body{padding:8px}.container{padding:15px}.chart-box{height:280px}button{font-size:15px}}
+
+/* Branded header and clear utility navigation */
+.site-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:12px 14px;margin:-4px 0 20px;border-bottom:1px solid #dfe4ec;background:#fff;border-radius:8px}
+.site-brand{font-weight:800;color:var(--blue);text-decoration:none;font-size:16px;white-space:nowrap}
+.site-nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.site-nav a{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border:1px solid #cbd8ef;border-radius:7px;background:#f1f5ff;color:#244f9c;text-decoration:none;font-size:13px;font-weight:700;line-height:1.25}
+.site-nav a:hover,.site-nav a:focus{background:#e4edff;border-color:var(--blue);outline:2px solid #4f8cff33}
+.site-nav a.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.channel-promo{margin:20px 0 0;padding:15px;border:1px solid #c9d8ff;border-radius:9px;background:#f2f6ff;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.channel-promo strong{display:block;font-size:16px;color:#244f9c;margin-bottom:3px}
+.channel-promo p{margin:0;color:#52627d;font-size:13px}
+.channel-link{display:inline-block;padding:10px 14px;border-radius:7px;background:#168b57;color:#fff;text-decoration:none;font-weight:700;font-size:14px;white-space:nowrap}
+@media(max-width:600px){.site-header{align-items:flex-start}.site-nav{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.site-nav a{width:100%;text-align:center;padding:10px 6px}.channel-link{width:100%;text-align:center}}
+
+</style>
+</head>
+<body>
+<main class="container">
+<header class="site-header">
+  <a class="site-brand" href="index.html">💰 Wealth Finance Utilities</a>
+  <nav class="site-nav" aria-label="Calculator navigation">
+    <a href="index.html">All Calculators</a>
+    <a href="car-loan-vs-fd-od.html">Car Loan vs FD + OD</a>
+    <a href="car-loan-extra-vs-rd.html" class="active" aria-current="page">Extra EMI vs RD</a>
+    <a href="sip-calculator.html">SIP Calculator</a>
+    <a href="fd-tax-calculator.html">FD Tax Calculator</a>
+  </nav>
+</header>
+
+<h1>Car Loan: Extra Payment vs RD Calculator</h1>
+<p class="subtitle">Compare using your monthly surplus to reduce car-loan principal immediately versus building a recurring deposit (RD) and making a lump-sum prepayment later.</p>
+
+<h2>Loan and savings inputs</h2>
+<div class="grid">
+  <div><label for="principal">Outstanding car loan (₹)</label><input id="principal" type="number" value="1200000" min="1" step="10000"></div>
+  <div><label for="loanRate">Car loan interest (% p.a.)</label><input id="loanRate" type="number" value="9" min="0" max="40" step="0.1"></div>
+  <div><label for="tenure">Remaining loan tenure</label><select id="tenure"></select></div>
+  <div><label for="surplus">Monthly surplus available (₹)</label><input id="surplus" type="number" value="10000" min="0" step="500"></div>
+  <div><label for="rdRate">RD interest (% p.a.)</label><input id="rdRate" type="number" value="7" min="0" max="20" step="0.1"></div>
+  <div><label for="tax">Assumed tax on RD interest (%)</label><input id="tax" type="number" value="30" min="0" max="100" step="1"></div>
+  <div><label for="prepayMonth">RD months before lump-sum prepayment</label><input id="prepayMonth" type="number" value="12" min="1" max="120" step="1"></div>
+  <div><label for="prepayFee">Prepayment fee (% of amount prepaid)</label><input id="prepayFee" type="number" value="0" min="0" max="10" step="0.1"></div>
+  <div><label for="taxMode">RD tax assumption</label><select id="taxMode"><option value="tax">Apply entered tax rate to RD interest at maturity</option><option value="none">Ignore tax</option></select><small>Tax treatment is simplified; actual tax depends on your circumstances.</small></div>
+</div>
+<button id="calculateBtn">Calculate comparison</button>
+<button id="resetBtn" class="secondary">Reset defaults</button>
+
+<div class="results">
+  <div class="card" id="extraCard">
+    <h3>🚗 Strategy A — Pay extra monthly</h3>
+    <div class="muted">Estimated loan payoff time</div><div class="metric" id="extraMonths">—</div>
+    <p>Total loan interest: <strong id="extraInterest">—</strong></p>
+    <p>Prepayment fees: <strong id="extraFees">—</strong></p>
+    <p>Surplus applied to principal: <strong id="extraUsed">—</strong></p>
+    <p>Total financing cost: <strong id="extraCost">—</strong></p>
+  </div>
+  <div class="card" id="rdCard">
+    <h3>🏦 Strategy B — Build RD, prepay later</h3>
+    <div class="muted">Estimated loan payoff time</div><div class="metric" id="rdMonths">—</div>
+    <p>Total loan interest: <strong id="rdInterest">—</strong></p>
+    <p>After-tax RD interest: <strong id="rdGain">—</strong></p>
+    <p>Prepayment fees: <strong id="rdFees">—</strong></p>
+    <p>Total financing cost after RD interest: <strong id="rdCost">—</strong></p>
+  </div>
+  <div class="card">
+    <h3>📊 Estimated comparison</h3>
+    <div class="muted">Difference in net financing cost</div><div class="metric" id="difference">—</div>
+    <p id="winnerText">—</p>
+    <p class="muted">Lower estimated net financing cost is preferable, all else equal.</p>
+  </div>
+</div>
+<div class="highlight" id="verdict">Adjust the inputs to compare strategies.</div>
+<div class="chart-box"><canvas id="balanceChart" aria-label="Loan balance and RD balance chart"></canvas></div>
+
+<h2>How this estimate works</h2>
+<div class="notice">
+<ul>
+<li>Regular EMI is calculated from the outstanding balance, interest rate and remaining tenure.</li>
+<li>Strategy A pays the normal EMI plus the monthly surplus toward the loan principal.</li>
+<li>Strategy B pays the normal EMI while depositing the surplus into an RD for the selected number of months, then uses the after-tax RD maturity amount for a lump-sum principal prepayment.</li>
+<li>RD deposits are modelled monthly with an approximate monthly rate. Banks may calculate RD interest and maturity differently.</li>
+<li>The prepayment fee is applied to the amount used to prepay. Check your lender's partial-prepayment rules and charges.</li>
+<li>This is an estimate, not financial advice or a bank quote. Validate the outputs before making a financial decision.</li>
+</ul>
+</div>
+
+<section class="channel-promo" aria-label="WhatsApp channel promotion">
+  <div>
+    <strong>📣 Follow WealthFinanceByKunal on WhatsApp</strong>
+    <p>Get personal finance tips, credit-card offers, savings strategies and useful money calculators.</p>
+  </div>
+  <a class="channel-link" href="https://whatsapp.com/channel/0029VaDsVrdGJP8Dq8mHdS3M" target="_blank" rel="noopener noreferrer">Follow WhatsApp Channel ↗</a>
+</section>
+<div class="watermark">Marketed by <strong>Kunal</strong></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const val=id=>Math.max(0,Number($(id).value)||0);
+const money=n=>'₹'+Math.round(n||0).toLocaleString('en-IN');
+function init(){for(let i=1;i<=10;i++)$('tenure').add(new Option(i+' year'+(i>1?'s':''),i));$('tenure').value='5';calculate();document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',calculate));$('calculateBtn').addEventListener('click',calculate);$('resetBtn').addEventListener('click',()=>{const d={principal:1200000,loanRate:9,tenure:5,surplus:10000,rdRate:7,tax:30,prepayMonth:12,prepayFee:0,taxMode:'tax'};Object.entries(d).forEach(([k,v])=>$(k).value=v);calculate()})}
+function emiFor(p,annual,n){const r=annual/1200;return r===0?p/n:p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)}
+function rdMaturity(payment,annual,months){const r=annual/1200;let balance=0,contributions=0;for(let m=0;m<months;m++){balance+=payment;contributions+=payment;balance*=1+r}return {balance,contributions,interest:Math.max(0,balance-contributions)}}
+function simulate(P,rate,emi,months,surplus,extraMonthly,rdMonths,rdRate,taxPct,feePct){
+ let bal=P,interest=0,fees=0,extraUsed=0,labels=[],loanBalances=[],rdBalances=[],rdInterestNet=0,rdContrib=0;
+ const r=rate/1200;
+ const rd=extraMonthly?null:rdMaturity(surplus,rdRate,rdMonths);
+ let payoffMonth=0;
+ for(let m=1;m<=months*2 && bal>0.005;m++){
+   const intr=bal*r; interest+=intr;
+   const regular=Math.min(bal+intr,emi);
+   bal=Math.max(0,bal-(regular-intr));
+   if(extraMonthly){const extra=Math.min(surplus,bal);bal-=extra;extraUsed+=extra;}
+   if(!extraMonthly && m===rdMonths){
+     rdContrib=rd.contributions;
+     rdInterestNet=rd.interest*(1-taxPct/100);
+     const available=rdContrib+rdInterestNet;
+     const lump=Math.min(bal,available);
+     fees+=lump*feePct/100;
+     bal=Math.max(0,bal-lump);
+     extraUsed=lump;
+   }
+   labels.push(m);loanBalances.push(bal);rdBalances.push(!extraMonthly && m<=rdMonths?rd.balance*(m/rdMonths):0);
+   if(bal<=0.005)payoffMonth=m;
+ }
+ if(!payoffMonth)payoffMonth=labels.length;
+ return {interest,fees,used:extraUsed,months:payoffMonth,labels,loanBalances,rdBalances,rdInterestNet,rdContrib,remaining:bal};
+}
+function calculate(){
+ const P=Math.max(1,val('principal')),rate=val('loanRate'),years=Math.max(1,Math.min(10,val('tenure'))),n=years*12,surplus=val('surplus'),rdRate=val('rdRate'),rdMonths=Math.max(1,Math.min(n,Math.floor(val('prepayMonth')))),tax=$('taxMode').value==='none'?0:Math.min(100,val('tax')),fee=val('prepayFee');
+ const emi=emiFor(P,rate,n);
+ const A=simulate(P,rate,emi,n,surplus,true,rdMonths,rdRate,tax,fee);
+ const B=simulate(P,rate,emi,n,surplus,false,rdMonths,rdRate,tax,fee);
+ // If the RD strategy still has a loan balance after its first planned term, continue regular EMI amortisation.
+ let bBal=B.remaining,bInt=B.interest,bMonth=B.months;const r=rate/1200;
+ while(bBal>0.005 && bMonth<n*2){const i=bBal*r;bInt+=i;bBal=Math.max(0,bBal-Math.min(bBal+i,emi)+i);bMonth++}
+ const costA=A.interest+A.fees,costB=bInt+B.fees-B.rdInterestNet,diff=Math.abs(costA-costB);
+ $('extraMonths').textContent=A.months+' months';$('extraInterest').textContent=money(A.interest);$('extraFees').textContent=money(A.fees);$('extraUsed').textContent=money(A.used);$('extraCost').textContent=money(costA);
+ $('rdMonths').textContent=bMonth+' months';$('rdInterest').textContent=money(bInt);$('rdGain').textContent=money(B.rdInterestNet);$('rdFees').textContent=money(B.fees);$('rdCost').textContent=money(costB);
+ $('difference').textContent=money(diff);$('winnerText').textContent=costA<=costB?'Monthly extra payment has the lower estimated net financing cost.':'RD followed by a lump-sum prepayment has the lower estimated net financing cost.';
+ $('verdict').textContent=costA<=costB?'Paying extra monthly is ahead by approximately '+money(diff)+' in estimated net financing cost.':'Building the RD and prepaying later is ahead by approximately '+money(diff)+' in estimated net financing cost.';
+ $('extraCard').className='card '+(costA<=costB?'winner':'loser');$('rdCard').className='card '+(costB<costA?'winner':'loser');
+ if(window.Chart){const c=$('balanceChart');if(c._chart)c._chart.destroy();const labels=Array.from({length:Math.max(A.loanBalances.length,B.loanBalances.length)},(_,i)=>'M'+(i+1));c._chart=new Chart(c,{type:'line',data:{labels,datasets:[{label:'Strategy A — remaining loan',data:A.loanBalances,borderColor:'#4f8cff',backgroundColor:'rgba(79,140,255,.12)',fill:false,tension:.2},{label:'Strategy B — remaining loan',data:B.loanBalances,borderColor:'#8a63d2',fill:false,tension:.2}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:x=>x.dataset.label+': '+money(x.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>money(v)}}}}})}
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
