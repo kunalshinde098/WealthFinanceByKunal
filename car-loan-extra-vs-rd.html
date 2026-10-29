@@ -93,7 +93,9 @@ small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
     <h3>🏦 Strategy B — Build RD, prepay later</h3>
     <div class="muted">Estimated loan payoff time</div><div class="metric" id="rdMonths">—</div>
     <p>Total loan interest: <strong id="rdInterest">—</strong></p>
+    <p>RD deposits (principal): <strong id="rdPrincipal">—</strong></p>
     <p>After-tax RD interest: <strong id="rdGain">—</strong></p>
+    <p>Total RD maturity used for prepayment: <strong id="rdMaturityUsed">—</strong></p>
     <p>Prepayment fees: <strong id="rdFees">—</strong></p>
     <p>Total financing cost after RD interest: <strong id="rdCost">—</strong></p>
   </div>
@@ -112,7 +114,7 @@ small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 <ul>
 <li>Regular EMI is calculated from the outstanding balance, interest rate and remaining tenure.</li>
 <li>Strategy A pays the normal EMI plus the monthly surplus toward the loan principal.</li>
-<li>Strategy B pays the normal EMI while depositing the surplus into an RD for the selected number of months, then uses the after-tax RD maturity amount for a lump-sum principal prepayment.</li>
+<li>Strategy B pays the normal EMI while depositing the surplus into an RD for the selected number of months, then uses the full RD maturity amount — all deposits (principal) plus interest after assumed tax — for a lump-sum principal prepayment.</li>
 <li>RD deposits are modelled monthly with an approximate monthly rate. Banks may calculate RD interest and maturity differently.</li>
 <li>The prepayment fee is applied to the amount used to prepay. Check your lender's partial-prepayment rules and charges.</li>
 <li>This is an estimate, not financial advice or a bank quote. Validate the outputs before making a financial decision.</li>
@@ -148,7 +150,7 @@ function simulate(P,rate,emi,months,surplus,extraMonthly,rdMonths,rdRate,taxPct,
    if(!extraMonthly && m===rdMonths){
      rdContrib=rd.contributions;
      rdInterestNet=rd.interest*(1-taxPct/100);
-     const available=rdContrib+rdInterestNet;
+     const available=rdContrib+rdInterestNet; // Use the full RD maturity value: all deposits (principal) plus after-tax interest.
      const lump=Math.min(bal,available);
      fees+=lump*feePct/100;
      bal=Math.max(0,bal-lump);
@@ -170,7 +172,7 @@ function calculate(){
  while(bBal>0.005 && bMonth<n*2){const i=bBal*r;bInt+=i;bBal=Math.max(0,bBal-Math.min(bBal+i,emi)+i);bMonth++}
  const costA=A.interest+A.fees,costB=bInt+B.fees-B.rdInterestNet,diff=Math.abs(costA-costB);
  $('extraMonths').textContent=A.months+' months';$('extraInterest').textContent=money(A.interest);$('extraFees').textContent=money(A.fees);$('extraUsed').textContent=money(A.used);$('extraCost').textContent=money(costA);
- $('rdMonths').textContent=bMonth+' months';$('rdInterest').textContent=money(bInt);$('rdGain').textContent=money(B.rdInterestNet);$('rdFees').textContent=money(B.fees);$('rdCost').textContent=money(costB);
+ $('rdMonths').textContent=bMonth+' months';$('rdInterest').textContent=money(bInt);$('rdPrincipal').textContent=money(B.rdContrib);$('rdGain').textContent=money(B.rdInterestNet);$('rdMaturityUsed').textContent=money(B.rdContrib+B.rdInterestNet);$('rdFees').textContent=money(B.fees);$('rdCost').textContent=money(costB);
  $('difference').textContent=money(diff);$('winnerText').textContent=costA<=costB?'Monthly extra payment has the lower estimated net financing cost.':'RD followed by a lump-sum prepayment has the lower estimated net financing cost.';
  $('verdict').textContent=costA<=costB?'Paying extra monthly is ahead by approximately '+money(diff)+' in estimated net financing cost.':'Building the RD and prepaying later is ahead by approximately '+money(diff)+' in estimated net financing cost.';
  $('extraCard').className='card '+(costA<=costB?'winner':'loser');$('rdCard').className='card '+(costB<costA?'winner':'loser');
