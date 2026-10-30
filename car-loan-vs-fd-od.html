@@ -156,7 +156,7 @@ button {
 @media(max-width:600px){.site-header{align-items:flex-start}.site-nav{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.site-nav a{width:100%;text-align:center;padding:10px 6px}.channel-link{width:100%;text-align:center}}
 
 </style>
-</head>
+<link rel="stylesheet" href="calculators.css"></head>
 
 <body>
 
@@ -177,7 +177,7 @@ button {
     <div class="grid">
         <div>
             <label>Loan Amount (₹)</label>
-            <input type="number" id="amount" value="2500000" min="10000" step="10000">
+            <input type="text" id="amount" value="2500000" inputmode="numeric" data-money="inr">
         </div>
 
         <div>
@@ -309,7 +309,7 @@ function calculate() {
     // Use setTimeout to allow UI to update before heavy calculation
     setTimeout(() => {
         try {
-            const P = Number(document.getElementById("amount").value);
+            const P = Number(String(document.getElementById("amount").value).replace(/[₹,\s]/g, "")) || 0;
             const yearsValue = Number(document.getElementById("yearsSelect").value);
             const loanRateAnnual = Number(document.getElementById("loanRate").value);
             const fdRateAnnual = Number(document.getElementById("fdRate").value);
@@ -328,7 +328,7 @@ function calculate() {
             const loanRate = loanRateAnnual / 100 / 12;
             const odRate = (fdRateAnnual + spreadAnnual) / 100 / 12;
 
-            const emi = P * loanRate * Math.pow(1 + loanRate, months) / 
+            const emi = loanRate === 0 ? P / months : P * loanRate * Math.pow(1 + loanRate, months) /
                 (Math.pow(1 + loanRate, months) - 1);
 
             let loanBal = P;
@@ -341,31 +341,36 @@ function calculate() {
 
             let totalLoanInterest = 0;
             let totalODInterest = 0;
-            const fdInterestNetTotal = (P * (fdRateAnnual / 100) * yearsValue) * (1 - taxPercent / 100);
             const cashbackAmount = (P * cashbackRate / 100);
-
-            for (let m = 1; m <= months; m++) {
-                const loanInterest = loanBal * loanRate;
-                totalLoanInterest += loanInterest;
-                loanBal -= (emi - loanInterest);
+            let fdInterestNet = 0;
+            let odPayoffMonths = 0;
+            // Continue OD amortisation beyond the original loan term if its rate is higher.
+            for (let m = 1; m <= 1200 && (m <= months || odBal > 0.005); m++) {
+                if (m <= months && loanBal > 0.005) {
+                    const loanInterest = loanBal * loanRate;
+                    totalLoanInterest += loanInterest;
+                    loanBal = Math.max(0, loanBal + loanInterest - emi);
+                }
 
                 const odInterest = odBal * odRate;
                 totalODInterest += odInterest;
-                odBal -= emi;
+                // EMI services OD interest first; only the remaining payment reduces OD principal.
+                odBal = Math.max(0, odBal + odInterest - emi);
+                if (odBal <= 0.005 && odPayoffMonths === 0) odPayoffMonths = m;
 
-                // Calculate cumulative FD interest earned up to this month
-                const fdInterestEarnedSoFar = (P * (fdRateAnnual / 100) * (m / 12)) * (1 - taxPercent / 100);
-                // Calculate proportional cashback (assuming received immediately)
-                const proportionalCashback = cashbackAmount * (m / months);
-                const odNetCostSoFar = totalODInterest - fdInterestEarnedSoFar - proportionalCashback;
+                // FD continues earning until the OD is fully repaid.
+                const fdGrossValueSoFar = P * Math.pow(1 + fdRateAnnual / 400, 4 * m / 12);
+                fdInterestNet = (fdGrossValueSoFar - P) * (1 - taxPercent / 100);
+                const cashbackAccrued = cashbackAmount; // assumed received at inception
+                const odNetCostSoFar = totalODInterest - fdInterestNet - cashbackAccrued;
 
                 loanInterestCumulative.push(totalLoanInterest);
                 odNetCumulative.push(odNetCostSoFar);
                 labels.push("M" + m);
             }
-
-            const fdInterestNet = fdInterestNetTotal;
-            const odNetCost = totalODInterest - fdInterestNet - cashbackAmount;
+            if (odPayoffMonths === 0 && odBal <= 0.005) odPayoffMonths = labels.length;
+            // Any OD balance remaining after the 100-year safety cap is shown as an outstanding liability.
+            const odNetCost = totalODInterest - fdInterestNet - cashbackAmount + odBal;
             const loanTotalCost = totalLoanInterest; // Car loan doesn't get cashback benefit
 
             document.getElementById("loanEmi").innerText = emi.toFixed(0);
@@ -375,6 +380,8 @@ function calculate() {
             document.getElementById("fdInterest").innerText = fdInterestNet.toFixed(0);
             document.getElementById("cashbackAmount").innerText = cashbackAmount.toFixed(0);
             document.getElementById("odNet").innerText = odNetCost.toFixed(0);
+            const payoffNote = odPayoffMonths ? `OD payoff: ${odPayoffMonths} months` : `OD balance still outstanding: ₹${odBal.toFixed(0)}`;
+            document.getElementById("winner").dataset.payoff = payoffNote;
 
             const loanCard = document.getElementById("loanCard");
             const odCard = document.getElementById("odCard");
@@ -484,6 +491,6 @@ function renderInterestChart(labels, loanInterestData, odNetData) {
 }
 </script>
 
-</body>
+<script src="app.js"></script><section class="methodology panel"><h2 class="section-title">Calculation method and assumptions</h2><div class="formula">Net OD cost = OD interest − after-tax FD interest − cashback</div><p>The same monthly payment is applied to both financing options. OD interest is serviced first and only the remaining payment reduces OD principal; the simulation continues beyond the original loan term if required. FD interest uses quarterly compounding and a simplified flat tax rate. Cashback is assumed to be received immediately. Actual OD terms, FD lien rules, fees, taxes and reward eligibility can change the result.</p></section></body>
 </html>
 

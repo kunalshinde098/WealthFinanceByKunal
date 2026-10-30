@@ -1,12 +1,18 @@
-# Wealth Finance Utilities — updated static pages
+# WealthFinanceByKunal — Financial Calculators
 
-Pages included:
-- `index.html`
-- `car-loan-vs-fd-od.html` — original calculator with restored header/navigation and WhatsApp channel promotion
-- `car-loan-extra-vs-rd.html` — extra monthly payment vs RD calculator with same navigation and channel promotion
-- `sip-calculator.html`
-- `fd-tax-calculator.html`
+Responsive static calculator portal for GitHub Pages.
 
-Upload all files into the same GitHub repository folder and configure GitHub Pages to deploy from the repository root. The navigation links assume the files are all in the same folder. The FD + OD calculator retains its original calculation script, with header/nav styles and WhatsApp promotion added.
+- Desktop: persistent left navigation with a complete category tree.
+- Mobile: slide-out navigation, backdrop dismissal and Escape-key support.
+- Searchable calculator navigation.
+- Consistent calculator input and results workspace.
+- Responsive layouts for phone, tablet and desktop.
+- Static HTML, CSS and JavaScript; no backend or build process.
 
-WhatsApp channel: https://whatsapp.com/channel/0029VaDsVrdGJP8Dq8mHdS3M
+Tools: SIP, Step Up SIP, Lumpsum, SWP, FD, Inflation, Financial Planning, Retirement, PPF, Home Loan EMI, Car Loan EMI, FD Tax, Car Loan vs FD + OD, Extra EMI vs RD.
+
+Deploy by copying these files to the GitHub Pages publishing folder and pushing the commit. All paths are relative and support the repository subpath.
+
+All calculations are illustrative estimates, not guaranteed returns or personal financial advice. Validate formulas, product rules and rates before publication.
+
+See `CALCULATION_METHODOLOGY.md` for formulas, calculation conventions and limitations.

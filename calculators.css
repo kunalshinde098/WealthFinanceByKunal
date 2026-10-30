@@ -1,0 +1,46 @@
+
+:root{--navy:#12233f;--blue:#2864c5;--ink:#17263c;--muted:#66758b;--line:#e2e8f0;--canvas:#f4f7fb;--sidebar:278px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+#wfSidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);background:var(--navy);color:#e8eef8;z-index:100;display:flex;flex-direction:column;transform:translateX(0);transition:transform .22s;box-shadow:8px 0 28px #10213b12}
+.wf-brand{padding:22px 19px;border-bottom:1px solid #ffffff1a;font-size:16px;font-weight:850;color:white;text-decoration:none;display:block}.wf-brand small{display:block;color:#9fb2ce;font-size:10px;letter-spacing:1px;font-weight:600}
+.wf-nav{padding:14px 12px;overflow:auto;flex:1}.wf-search{width:100%;height:40px;border:1px solid #ffffff25;border-radius:9px;background:#ffffff12;color:white;padding:0 12px;margin:0 0 14px;font:inherit;font-size:13px}.wf-search::placeholder{color:#a9b9d0}
+.wf-link,.wf-toggle{display:flex;width:100%;align-items:center;gap:10px;padding:9px 11px;min-height:37px;border:0;border-radius:8px;background:transparent;color:#d8e3f2;text-decoration:none;text-align:left;font:600 12px/1.35 inherit;cursor:pointer}.wf-link:hover,.wf-toggle:hover{background:#ffffff14;color:#fff}.wf-link.active{background:#244a79;color:#fff;box-shadow:inset 3px 0 #62d4c3}
+.wf-label{padding:16px 10px 7px;color:#8fa5c3;font-size:10px;font-weight:800;letter-spacing:1px}.wf-toggle .arrow{margin-left:auto;color:#9eb1cc}.wf-sub{padding:3px 0 5px 24px}.wf-sub[hidden]{display:none}.wf-sub .wf-link{font-weight:500;color:#bdcbe0;min-height:33px}.wf-sub .wf-link.active{color:white}
+.wf-foot{padding:14px 17px;border-top:1px solid #ffffff1a;color:#9fb2ce;font-size:10px}.wf-foot a{color:#bdebe2;text-decoration:none;font-weight:700}
+#wfOverlay{display:none;position:fixed;inset:0;background:#0a162c80;z-index:90}
+#wfMain{margin-left:var(--sidebar);min-height:100vh}
+#wfTop{height:65px;background:#ffffffed;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+#wfTop .crumb{font-size:12px;color:var(--muted)}#wfTop .tag{font-size:10px;font-weight:750;color:#47715f;background:#edf8f2;padding:7px 10px;border-radius:20px}
+#wfMenu{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;width:38px;height:38px;font-size:20px}
+.wf-content{max-width:1320px;margin:auto;padding:clamp(17px,3vw,36px)}
+h1{font-size:clamp(26px,3.2vw,38px);line-height:1.16;letter-spacing:-1px;color:var(--navy);margin:0;font-weight:850}
+.subtitle{max-width:760px;color:var(--muted);margin:10px 0 25px;font-size:14px}
+.section-title{font-size:17px;font-weight:800;color:var(--navy);margin:0 0 15px}
+.container{max-width:none;margin:0;background:transparent;border:0;border-radius:0;padding:0;box-shadow:none}
+.site-header{display:none}
+.calculator-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(310px,.95fr);gap:18px;align-items:start}
+.input-panel,.results-panel,.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:clamp(17px,2.2vw,25px);box-shadow:0 8px 30px #12233f0a}
+.results-panel{position:sticky;top:82px}
+.field-grid,.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 13px}
+.field{min-width:0}.field label{display:block;font-size:12px;font-weight:750;color:#40516a;margin-bottom:7px}
+.field input,.field select{width:100%;height:45px;padding:0 11px;border:1px solid #d5deea;border-radius:9px;background:white;color:var(--ink);font:600 14px inherit}
+.field input:focus,.field select:focus{outline:3px solid #2864c51c;border-color:#75a0e4}
+.field small{display:block;color:#8793a5;font-size:10px;margin-top:4px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.btn{border:0;border-radius:9px;background:var(--blue);color:#fff;font-weight:750;padding:12px 18px;font-size:13px;cursor:pointer}.btn.secondary{background:#eff3f9;color:#3e526e;box-shadow:none}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:8px}
+.result{padding:14px;border:1px solid var(--line);border-radius:10px;background:#fafbfd;min-width:0}.result.primary{grid-column:1/-1;background:linear-gradient(135deg,#edf5ff,#f2fbf8);border-color:#cddff6}
+.result h3{font-size:11px;color:var(--muted);margin:0 0 6px}.value{font-size:clamp(20px,2.2vw,27px);font-weight:850;color:var(--navy);overflow-wrap:anywhere}.result.primary .value{font-size:clamp(25px,3vw,34px);color:#1f5bb0}.detail{font-size:11px;color:var(--muted);margin-top:4px}
+.note{margin-top:16px;padding:13px 14px;background:#f7f9fc;border:1px solid #e8edf4;border-radius:10px;color:#64738a;font-size:11.5px}
+.tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.tool{display:flex;flex-direction:column;min-height:145px;padding:18px;background:#fff;border:1px solid var(--line);border-radius:13px;text-decoration:none;color:inherit;box-shadow:0 4px 15px #12233f08;transition:.18s}.tool:hover{transform:translateY(-3px);border-color:#adc6ec;box-shadow:0 10px 30px #12233f12}.tool-icon{width:37px;height:37px;display:grid;place-items:center;border-radius:10px;background:#edf4ff;font-size:18px}.tool h2{font-size:14px;color:var(--navy);margin:11px 0 4px}.tool p{font-size:12px;color:var(--muted);margin:0}.tool-arrow{margin-top:auto;padding-top:10px;color:var(--blue);font-size:11px;font-weight:800}
+.category-block{margin:0 0 27px}.category-head{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:12px}.category-head p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.promo{margin-top:25px;padding:18px 20px;background:linear-gradient(110deg,#edf4ff,#eefaf6);border:1px solid #d7e5f5;border-radius:13px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.promo strong{color:var(--navy);font-size:14px}.promo p{margin:3px 0;color:var(--muted);font-size:12px}.cta{background:#13836c;color:#fff;text-decoration:none;font-weight:800;padding:10px 14px;border-radius:9px;font-size:12px}
+.footer{text-align:center;color:#8a96a8;font-size:11px;margin:25px 0 8px}
+@media(max-width:1050px){.calculator-layout{grid-template-columns:1fr}.results-panel{position:static}.tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){#wfSidebar{transform:translateX(-102%)}body.wf-nav-open #wfSidebar{transform:translateX(0)}body.wf-nav-open #wfOverlay{display:block}#wfMain{margin-left:0}#wfTop{height:58px;padding:0 13px}#wfMenu{display:block}.wf-content{padding:19px 13px 28px}.tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tool{padding:14px;min-height:140px}.field-grid,.grid{grid-template-columns:1fr}.results-panel{padding:16px}}
+@media(max-width:390px){.tool-grid,.results{grid-template-columns:1fr}.result.primary{grid-column:auto}#wfTop .tag{display:none}}
+
+/* Currency inputs: Indian comma-grouped rupee amounts */
+.field input[data-money="inr"]{font-variant-numeric:tabular-nums;letter-spacing:.1px}
+.field input[data-money="inr"]::placeholder{color:#9aa7b8}
+
+.methodology{margin-top:18px}.methodology p{font-size:12px;color:#66758b;margin:8px 0}.formula{padding:13px 15px;border-radius:9px;background:#f1f5fb;border:1px solid #e1e9f4;color:#18365f;font:600 13px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}

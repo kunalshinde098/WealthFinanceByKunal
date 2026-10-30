@@ -48,7 +48,7 @@ small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 @media(max-width:600px){.site-header{align-items:flex-start}.site-nav{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.site-nav a{width:100%;text-align:center;padding:10px 6px}.channel-link{width:100%;text-align:center}}
 
 </style>
-</head>
+<link rel="stylesheet" href="calculators.css"></head>
 <body>
 <main class="container">
 <header class="site-header">
@@ -67,10 +67,10 @@ small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 
 <h2>Loan and savings inputs</h2>
 <div class="grid">
-  <div><label for="principal">Outstanding car loan (₹)</label><input id="principal" type="number" value="1200000" min="1" step="10000"></div>
+  <div><label for="principal">Outstanding car loan (₹)</label><input id="principal" type="text" value="1200000" inputmode="numeric" data-money="inr"></div>
   <div><label for="loanRate">Car loan interest (% p.a.)</label><input id="loanRate" type="number" value="9" min="0" max="40" step="0.1"></div>
   <div><label for="tenure">Remaining loan tenure</label><select id="tenure"></select></div>
-  <div><label for="surplus">Monthly surplus available (₹)</label><input id="surplus" type="number" value="10000" min="0" step="500"></div>
+  <div><label for="surplus">Monthly surplus available (₹)</label><input id="surplus" type="text" value="10000" inputmode="numeric" data-money="inr"></div>
   <div><label for="rdRate">RD interest (% p.a.)</label><input id="rdRate" type="number" value="7" min="0" max="20" step="0.1"></div>
   <div><label for="tax">Assumed tax on RD interest (%)</label><input id="tax" type="number" value="30" min="0" max="100" step="1"></div>
   <div><label for="prepayMonth">RD months before lump-sum prepayment</label><input id="prepayMonth" type="number" value="12" min="1" max="120" step="1"></div>
@@ -132,11 +132,11 @@ small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const val=id=>Math.max(0,Number($(id).value)||0);
+const val=id=>Math.max(0,Number(String($(id).value||'').replace(/[₹,\s]/g,''))||0);
 const money=n=>'₹'+Math.round(n||0).toLocaleString('en-IN');
 function init(){for(let i=1;i<=10;i++)$('tenure').add(new Option(i+' year'+(i>1?'s':''),i));$('tenure').value='5';calculate();document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',calculate));$('calculateBtn').addEventListener('click',calculate);$('resetBtn').addEventListener('click',()=>{const d={principal:1200000,loanRate:9,tenure:5,surplus:10000,rdRate:7,tax:30,prepayMonth:12,prepayFee:0,taxMode:'tax'};Object.entries(d).forEach(([k,v])=>$(k).value=v);calculate()})}
 function emiFor(p,annual,n){const r=annual/1200;return r===0?p/n:p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)}
-function rdMaturity(payment,annual,months){const r=annual/1200;let balance=0,contributions=0;for(let m=0;m<months;m++){balance+=payment;contributions+=payment;balance*=1+r}return {balance,contributions,interest:Math.max(0,balance-contributions)}}
+function rdMaturity(payment,annual,months){const r=Math.pow(1+annual/100,1/12)-1;let balance=0,contributions=0;for(let m=0;m<months;m++){balance*=1+r;balance+=payment;contributions+=payment}return {balance,contributions,interest:Math.max(0,balance-contributions)}}
 function simulate(P,rate,emi,months,surplus,extraMonthly,rdMonths,rdRate,taxPct,feePct){
  let bal=P,interest=0,fees=0,extraUsed=0,labels=[],loanBalances=[],rdBalances=[],rdInterestNet=0,rdContrib=0;
  const r=rate/1200;
@@ -146,7 +146,7 @@ function simulate(P,rate,emi,months,surplus,extraMonthly,rdMonths,rdRate,taxPct,
    const intr=bal*r; interest+=intr;
    const regular=Math.min(bal+intr,emi);
    bal=Math.max(0,bal-(regular-intr));
-   if(extraMonthly){const extra=Math.min(surplus,bal);bal-=extra;extraUsed+=extra;}
+   if(extraMonthly){const extra=Math.min(surplus,bal);bal-=extra;extraUsed+=extra;fees+=extra*feePct/100;}
    if(!extraMonthly && m===rdMonths){
      rdContrib=rd.contributions;
      rdInterestNet=rd.interest*(1-taxPct/100);
@@ -180,5 +180,5 @@ function calculate(){
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
-</body>
+<script src="app.js"></script><section class="methodology panel"><h2 class="section-title">Calculation method and assumptions</h2><div class="formula">Net cost = Loan interest + prepayment fees − after-tax RD interest</div><p>Strategy A pays the monthly surplus directly against loan principal. Strategy B invests the same surplus into an RD and uses its estimated maturity value for a lump-sum prepayment in the selected month. RD is modelled with monthly effective compounding and month-end deposits; actual bank RD compounding, tax and prepayment rules may differ.</p></section></body>
 </html>
