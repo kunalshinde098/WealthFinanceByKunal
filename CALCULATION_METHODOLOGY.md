@@ -63,3 +63,22 @@ This is a deterministic estimate. It does not model market volatility, sequence-
 - `app.js`: navigation and Indian currency grouping.
 - `calculators.css`: shared responsive design and formula styling.
 - Individual HTML pages: inputs, results, formula explanation and assumptions.
+
+
+## Local persistence and privacy
+
+- If the visitor enables it, calculator inputs are saved locally in IndexedDB on that browser/device.
+- A first-party cookie (`wf_local_save`) stores only the visitor's save preference; it does not contain financial inputs.
+- Each calculator page has a separate saved record. Inputs are restored automatically on a later visit.
+- The user can clear all saved calculator inputs or turn saving off from the on-page controls.
+- Data is not transmitted to the website or any server. It does not sync between browsers or devices.
+- Clearing browser site data, using private browsing, or changing devices may remove or make saved inputs unavailable.
+
+
+## Local data persistence (updated)
+
+- Calculator inputs are automatically saved in IndexedDB on the visitor's current browser/device; there is no permission popup.
+- A small, non-blocking privacy note appears in the page flow. It explains that values remain local and are not sent to the website's servers.
+- Each calculator page has its own saved record and restores it on later visits.
+- Visitors can clear all saved calculator inputs using the inline control.
+- Data does not sync across browsers or devices. Clearing browser site data or using private browsing may remove saved values.

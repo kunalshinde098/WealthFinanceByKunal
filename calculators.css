@@ -44,3 +44,14 @@ h1{font-size:clamp(26px,3.2vw,38px);line-height:1.16;letter-spacing:-1px;color:v
 .field input[data-money="inr"]::placeholder{color:#9aa7b8}
 
 .methodology{margin-top:18px}.methodology p{font-size:12px;color:#66758b;margin:8px 0}.formula{padding:13px 15px;border-radius:9px;background:#f1f5fb;border:1px solid #e1e9f4;color:#18365f;font:600 13px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+
+
+
+
+/* Quiet, in-flow local-storage notice — never overlays calculator controls */
+.wf-local-note{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0 12px;padding:9px 12px;border:1px solid #e4eaf2;border-radius:9px;background:#f8fafc;color:#64748b;font-size:11px;line-height:1.5}
+.wf-local-note span{flex:1;min-width:220px}
+.wf-local-note strong{color:#43546d;font-weight:650}
+.wf-local-note button{border:0;background:transparent;color:#315b8c;text-decoration:underline;font-size:11px;cursor:pointer;padding:3px}
+.wf-local-note small{color:#7b8798;font-size:10px}
+@media(max-width:600px){.wf-local-note{align-items:flex-start;gap:5px}.wf-local-note span{flex-basis:100%}}

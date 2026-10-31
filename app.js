@@ -38,4 +38,88 @@
  });
  const search=document.getElementById('wfSearch');
  search.addEventListener('input',()=>{const q=search.value.toLowerCase().trim();document.querySelectorAll('.wf-toggle').forEach(btn=>{const sub=document.getElementById(btn.getAttribute('aria-controls'));let n=0;sub.querySelectorAll('a').forEach(a=>{const show=!q||a.textContent.toLowerCase().includes(q);a.hidden=!show;if(show)n++});btn.hidden=n===0;sub.hidden=q?false:n===0;btn.setAttribute('aria-expanded',q?'true':btn.getAttribute('aria-expanded'))})});
+
+
+ // Automatic local-only persistence: calculator inputs stay in this browser's IndexedDB.
+ const DB_NAME='wealthFinanceByKunal';
+ const DB_VERSION=1;
+ const STORE_NAME='calculatorInputs';
+ const pageKey=location.pathname.replace(/\/+$/,'').replace(/^\//,'')||'index.html';
+ let dbPromise=null;
+ const openDB=()=>{
+   if(!('indexedDB' in window))return Promise.reject(new Error('IndexedDB unavailable'));
+   if(dbPromise)return dbPromise;
+   dbPromise=new Promise((resolve,reject)=>{
+     const req=indexedDB.open(DB_NAME,DB_VERSION);
+     req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE_NAME))db.createObjectStore(STORE_NAME,{keyPath:'page'});};
+     req.onsuccess=()=>resolve(req.result);
+     req.onerror=()=>reject(req.error||new Error('Could not open local database'));
+   });
+   return dbPromise;
+ };
+ const localNote=document.createElement('div');
+ localNote.className='wf-local-note';
+ localNote.innerHTML='<span><strong>Privacy:</strong> Your calculator inputs are saved locally in this browser on this device only. They are not sent to our servers.</span><button type="button" id="wfClearSaved">Clear saved data</button><small id="wfSaveStatus" role="status">Auto-save is on</small>';
+ if(content)content.appendChild(localNote);
+ const updateSaveStatus=message=>{const el=document.getElementById('wfSaveStatus');if(el)el.textContent=message;};
+ const savePage=async()=>{
+   if(pageKey==='index.html')return;
+   const fields=[...document.querySelectorAll('input[id],select[id],textarea[id]')]
+     .filter(el=>!['button','submit','reset','password','file','hidden'].includes(el.type))
+     .map(el=>({id:el.id,type:el.type,value:['checkbox','radio'].includes(el.type)?undefined:el.value,checked:['checkbox','radio'].includes(el.type)?el.checked:undefined}));
+   try{
+     const db=await openDB();
+     await new Promise((resolve,reject)=>{
+       const tx=db.transaction(STORE_NAME,'readwrite');
+       tx.objectStore(STORE_NAME).put({page:pageKey,fields,savedAt:new Date().toISOString()});
+       tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+     });
+     updateSaveStatus('Saved locally');
+   }catch(err){console.warn('Local save unavailable:',err);updateSaveStatus('Local saving unavailable in this browser');}
+ };
+ let saveTimer;
+ const scheduleSave=()=>{
+   clearTimeout(saveTimer);
+   saveTimer=setTimeout(savePage,300);
+ };
+ const restorePage=async()=>{
+   if(pageKey==='index.html')return;
+   try{
+     const db=await openDB();
+     const saved=await new Promise((resolve,reject)=>{
+       const req=db.transaction(STORE_NAME,'readonly').objectStore(STORE_NAME).get(pageKey);
+       req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
+     });
+     if(!saved||!Array.isArray(saved.fields))return;
+     saved.fields.forEach(item=>{
+       const el=document.getElementById(item.id);if(!el)return;
+       if(['checkbox','radio'].includes(el.type))el.checked=!!item.checked;
+       else if(item.value!==undefined)el.value=item.value;
+       el.dispatchEvent(new Event(['checkbox','radio'].includes(el.type)?'change':'input',{bubbles:true}));
+       if(el.matches('input[data-money="inr"]'))el.dispatchEvent(new Event('blur',{bubbles:true}));
+     });
+     updateSaveStatus('Previous inputs restored · saved locally');
+   }catch(err){console.warn('Could not restore local inputs:',err);updateSaveStatus('Could not read saved data');}
+ };
+ const clearAllSaved=async()=>{
+   try{
+     const db=await openDB();
+     await new Promise((resolve,reject)=>{
+       const tx=db.transaction(STORE_NAME,'readwrite');
+       tx.objectStore(STORE_NAME).clear();
+       tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+     });
+     updateSaveStatus('All saved calculator data cleared');
+   }catch(err){updateSaveStatus('Could not clear local data');}
+ };
+ document.getElementById('wfClearSaved')?.addEventListener('click',()=>{
+   if(confirm('Clear all calculator inputs saved on this device?'))clearAllSaved();
+ });
+ document.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{
+   el.addEventListener('input',scheduleSave);
+   el.addEventListener('change',scheduleSave);
+ });
+ // Save by default; no consent popup or blocking overlay.
+ restorePage();
+
 })();

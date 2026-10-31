@@ -16,3 +16,15 @@ Deploy by copying these files to the GitHub Pages publishing folder and pushing 
 All calculations are illustrative estimates, not guaranteed returns or personal financial advice. Validate formulas, product rules and rates before publication.
 
 See `CALCULATION_METHODOLOGY.md` for formulas, calculation conventions and limitations.
+
+### Local persistence
+The site offers opt-in local saving of calculator inputs with IndexedDB. A cookie stores the preference only. Visitors can manage or clear saved inputs on the page; no input data is uploaded.
+
+
+## Local data persistence (updated)
+
+- Calculator inputs are automatically saved in IndexedDB on the visitor's current browser/device; there is no permission popup.
+- A small, non-blocking privacy note appears in the page flow. It explains that values remain local and are not sent to the website's servers.
+- Each calculator page has its own saved record and restores it on later visits.
+- Visitors can clear all saved calculator inputs using the inline control.
+- Data does not sync across browsers or devices. Clearing browser site data or using private browsing may remove saved values.
